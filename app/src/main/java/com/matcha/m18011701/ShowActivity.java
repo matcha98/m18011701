@@ -1,6 +1,8 @@
 package com.matcha.m18011701;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -22,6 +24,12 @@ public class ShowActivity extends AppCompatActivity {
         tv3=findViewById(R.id.textView3);
         Intent it=getIntent();
         id=it.getIntExtra("id",0);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         Student s=MainActivity.dao.getStudent(id);
         tv1.setText(String.valueOf(s.id));
         tv2.setText(s.name);
@@ -34,8 +42,22 @@ public class ShowActivity extends AppCompatActivity {
     }
     public void clickDel(View v)
     {
-        MainActivity.dao.delete(id);
-        finish();
+        AlertDialog.Builder builder=new AlertDialog.Builder(ShowActivity.this);
+        builder.setTitle("刪除確認");
+        builder.setMessage("確認要刪除本筆資料嗎?");
+        builder.setPositiveButton("確認", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                MainActivity.dao.delete(id);
+                finish();
+            }
+        });
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+            }
+        });
+        builder.show();
     }
     public void clickEdit(View v)
     {

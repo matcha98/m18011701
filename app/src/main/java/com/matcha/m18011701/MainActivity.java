@@ -8,24 +8,22 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
-import android.widget.Toast;
-
 import com.matcha.m18011701.data.Student;
+import com.matcha.m18011701.data.StudentFileDAO;
 import com.matcha.m18011701.data.StudentScoreDAO;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    final static StudentScoreDAO dao=new StudentScoreDAO();
+    static StudentFileDAO dao;
     ListView lv;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        dao=new StudentFileDAO(MainActivity.this);
         lv=findViewById(R.id.listView);
     }
 

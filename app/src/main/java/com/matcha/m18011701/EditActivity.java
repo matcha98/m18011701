@@ -38,7 +38,6 @@ public class EditActivity extends AppCompatActivity {
             String name=ed4.getText().toString();
             int score=Integer.valueOf(ed5.getText().toString());
             MainActivity.dao.update(new Student(id,name,score));
-            Intent it=new Intent(EditActivity.this,MainActivity.class);
-            startActivity(it);
+            finish();
     }
 }
