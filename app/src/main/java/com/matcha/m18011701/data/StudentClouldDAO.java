@@ -9,6 +9,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.matcha.m18011701.MainActivity;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -27,7 +28,7 @@ public class StudentClouldDAO implements StudentDAO {
     private FirebaseDatabase database;
     DatabaseReference myRef;
 
-    public StudentClouldDAO(Context context)
+    public StudentClouldDAO(final Context context)
     {
         this.context=context;
         mylist = new ArrayList<>();
@@ -42,6 +43,7 @@ public class StudentClouldDAO implements StudentDAO {
                 String value = dataSnapshot.getValue(String.class);
                 Gson gson = new Gson();
                 mylist = gson.fromJson(value, new TypeToken<ArrayList<Student>>(){}.getType());
+                ((MainActivity)context).refreshData();
             }
 
             @Override
