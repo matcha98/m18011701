@@ -1,8 +1,15 @@
 package com.matcha.m18011701.data;
 
 import android.content.Context;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -14,50 +21,58 @@ import java.util.ArrayList;
  * Created by Student on 2018/1/18.
  */
 
-public class StudentFileDAO implements StudentDAO {
+public class StudentClouldDAO implements StudentDAO {
     public ArrayList<Student> mylist;
     private Context context;
-    public StudentFileDAO(Context context)
+    private FirebaseDatabase database;
+    DatabaseReference myRef;
+
+    public StudentClouldDAO(Context context)
     {
         this.context=context;
         mylist = new ArrayList<>();
+        database = FirebaseDatabase.getInstance();
+        myRef = database.getReference("score");
+
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                String value = dataSnapshot.getValue(String.class);
+                Gson gson = new Gson();
+                mylist = gson.fromJson(value, new TypeToken<ArrayList<Student>>(){}.getType());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+
+            }
+        });
+        if(mylist==null)
+        {
+            mylist=new ArrayList<>();
+        }
     }
+
     //寫入檔案
     public void saveFile()
     {
-        File f=new File(context.getFilesDir(),"mydata.txt");
-        FileWriter fw;
-        try {
-            fw=new FileWriter(f);
-            Gson gson=new Gson();
-            String data=gson.toJson(mylist);
-            fw.write(data);
-            fw.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    //讀取檔案
-    public void load()
-    {
-        File f=new File(context.getFilesDir(),"mydata.txt");
-        FileReader fr;
-        try {
-            fr=new FileReader(f);
-            BufferedReader br=new BufferedReader(fr);
-            String str=br.readLine();
-            Gson gson=new Gson();
-            mylist=gson.fromJson(str,new TypeToken<ArrayList<Student>>(){}.getType());
-            br.close();
-            fr.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Gson gson=new Gson();
+        String data=gson.toJson(mylist);
+
+        myRef.setValue(data);
 
     }
+
     //新增
     public boolean add(Student s)
     {
+        if (mylist == null)
+        {
+            mylist = new ArrayList<>();
+        }
         mylist.add(s);
         saveFile();
         return true;
@@ -65,13 +80,11 @@ public class StudentFileDAO implements StudentDAO {
     //查詢所有
     public ArrayList<Student> getList()
     {
-        load();
         return mylist;
     }
     //查詢
     public Student getStudent(int id)
     {
-        load();
         for(Student s: mylist)
         {
             if(s.id==id)
@@ -84,7 +97,6 @@ public class StudentFileDAO implements StudentDAO {
     //更新
     public boolean update(Student s)
     {
-        load();
         for(int i=0;i<mylist.size();i++)
         {
             if(mylist.get(i).id==s.id)
@@ -101,7 +113,6 @@ public class StudentFileDAO implements StudentDAO {
     //刪除
     public boolean delete(int id)
     {
-        load();
         for(int i=0;i<mylist.size();i++)
         {
             if(mylist.get(i).id==id)

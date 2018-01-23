@@ -9,22 +9,24 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import com.matcha.m18011701.data.DBType;
 import com.matcha.m18011701.data.Student;
-import com.matcha.m18011701.data.StudentFileDAO;
-import com.matcha.m18011701.data.StudentScoreDAO;
-
+import com.matcha.m18011701.data.StudentDAO;
+import com.matcha.m18011701.data.StudentDAOFactory;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    static StudentFileDAO dao;
+    static StudentDAO dao;
+    DBType dbType;
     ListView lv;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        dao=new StudentFileDAO(MainActivity.this);
         lv=findViewById(R.id.listView);
+        dbType=DBType.CLOULD;
+        dao= StudentDAOFactory.getInstance(MainActivity.this,dbType);
     }
 
     @Override
